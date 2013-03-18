@@ -1,7 +1,19 @@
 require 'json'
 require 'net/http'
-require 'rexml/document'
 require 'ostruct'
+require 'rexml/document'
+
+def console_log(msg)
+  escape = proc{ |m| m.gsub("'", "'\\\\''") }
+  `logger -t 'Alfred Workflow' '#{escape[msg]}'`
+end
+
+now  = Time.now
+
+case ARGV[0].to_s.downcase
+when 'demain'
+  now += 86400
+end
 
 channels = {
   1 => 19,
@@ -25,21 +37,31 @@ channels = {
   19 => 69
 }
 
-is_prime = true
-
-uri = URI('http://api.programme-tv.net/1326279455-10/getPrime/?date=2013-03-17&periode=prime1&bouquetId=2')
-json = JSON.parse(Net::HTTP.get(uri))
+is_prime = ARGV.length < 2
 
 doc = REXML::Document.new('<items/>')
 doc << REXML::XMLDecl.new
 
-items = OpenStruct.new(json)
+channel_id = ARGV[1].nil? ? 19 : channels[ARGV[1].to_i]
 
-channel_id = 19
+time_begin = Time.new(now.year, now.month, now.day, 20, 00).to_i
+
+time_end = Time.new(now.year, now.month, now.day, 22, 00).to_i
+
+if is_prime then
+  uri = URI('http://api.programme-tv.net/1326279455-10/getPrime/?date=' + now.strftime('%Y-%m-%d') + '&periode=prime1&bouquetId=2')
+else
+  uri = URI('http://api.programme-tv.net/1326279455-10/getBroadcastInfo/?timeBegin=' + time_begin.to_s + '&timeEnd=' + time_end.to_s + '&channelList=' + channel_id.to_s)
+end
+
+json = JSON.parse(Net::HTTP.get(uri))
+items = OpenStruct.new(json)
 
 results = []
 
 items.data.each { |data|
+
+
   item = OpenStruct.new(data['list'][0])
 
   results << {
@@ -52,6 +74,10 @@ items.data.each { |data|
     'subtitle' => '(' + data['name'] + ' / ' + item.type + ' / ' + item.heure + ')',
     'icon' => item.image_vignette_small,
   }
+
+
+
+
 }
 
 results.each { |result|
@@ -62,7 +88,3 @@ results.each { |result|
 }
 
 puts doc
-
-#ARGV.each do|a|
-#  puts "Argument: #{a}"
-#end
