@@ -71,11 +71,11 @@ json[:data].each do |data|
   end
 end
 
-results.each { |result|
+results.each do |result|
   item = xml.root.add_element('item', result['attr'])
   item.add_element('title').add_text(result['title'])
   item.add_element('subtitle').add_text(result['subtitle'])
   item.add_element('icon').add_text(result['icon'])
-}
+end
 
 puts xml
