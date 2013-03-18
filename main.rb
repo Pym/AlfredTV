@@ -56,22 +56,20 @@ json = JSON.parse(Net::HTTP.get(uri), :symbolize_names => true)
 
 results = []
 
-json[:data].each { |data|
-
-  item = data[:list][0]
-
-  results << {
-    'attr' => {
-      'uid' => 'tv-' << data[:idChaine],
-      'arg' => 'tv-' << data[:idChaine],
-      'valid' => 'yes'
-    },
-    'title' => item[:titre],
-    'subtitle' => "(#{data[:name]} / #{item[:type]} / #{item[:heure]})",
-    'icon' => item[:image_vignette_small],
-  }
-
-}
+json[:data].each do |data|
+  data[:list].each do |item|
+    results << {
+      'attr' => {
+        'uid' => 'tv-' << data[:idChaine],
+        'arg' => 'tv-' << data[:idChaine],
+        'valid' => 'yes'
+      },
+      'title' => item[:titre],
+      'subtitle' => "(#{data[:name]} / #{item[:type]} / #{item[:heure]})",
+      'icon' => item[:image_vignette_small],
+    }
+  end
+end
 
 results.each { |result|
   item = xml.root.add_element('item', result['attr'])
