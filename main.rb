@@ -62,12 +62,12 @@ json[:data].each { |data|
 
   results << {
     'attr' => {
-      'uid' => 'tv-' + data[:idChaine],
-      'arg' => 'tv-' + data[:idChaine],
+      'uid' => 'tv-' << data[:idChaine],
+      'arg' => 'tv-' << data[:idChaine],
       'valid' => 'yes'
     },
     'title' => item[:titre],
-    'subtitle' => '(' + data[:name] + ' / ' + item[:type] + ' / ' + item[:heure] + ')',
+    'subtitle' => "({data[:name]} / {item[:type]} / {item[:heure]})",
     'icon' => item[:image_vignette_small],
   }
 
