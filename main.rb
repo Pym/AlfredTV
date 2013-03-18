@@ -47,9 +47,9 @@ time_begin = Time.new(now.year, now.month, now.day, 20, 00).to_i
 time_end = Time.new(now.year, now.month, now.day, 22, 00).to_i
 
 if is_prime then
-  uri = URI('http://api.programme-tv.net/1326279455-10/getPrime/?date=' + now.strftime('%Y-%m-%d') + '&periode=prime1&bouquetId=2')
+  uri = URI("http://api.programme-tv.net/1326279455-10/getPrime/?date={ now.strftime('%Y-%m-%d') }&periode=prime1&bouquetId=2")
 else
-  uri = URI('http://api.programme-tv.net/1326279455-10/getBroadcastInfo/?timeBegin=' + time_begin.to_s + '&timeEnd=' + time_end.to_s + '&channelList=' + channel_id.to_s)
+  uri = URI("http://api.programme-tv.net/1326279455-10/getBroadcastInfo/?timeBegin={ time_begin.to_s }&timeEnd={ time_end.to_s }&channelList={ channel_id.to_s }")
 end
 
 json = JSON.parse(Net::HTTP.get(uri), :symbolize_names => true)
